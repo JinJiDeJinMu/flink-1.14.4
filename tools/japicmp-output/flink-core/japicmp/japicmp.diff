@@ -1,0 +1,5 @@
+Comparing source compatibility of /Users/jinmu/Downloads/self/flink-1.14.4/flink-core/target/flink-core-1.14.4.jar against /usr/local/responstiy/org/apache/flink/flink-core/1.14.3/flink-core-1.14.3.jar
+===  UNCHANGED INTERFACE: PUBLIC ABSTRACT org.apache.flink.core.fs.EntropyInjectingFileSystem  (not serializable)
+	===  CLASS FILE FORMAT VERSION: 52.0 <- 52.0
+	===  UNCHANGED METHOD: PUBLIC ABSTRACT java.lang.String getEntropyInjectionKey()
+		+++  NEW ANNOTATION: javax.annotation.Nullable
