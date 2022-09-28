@@ -95,6 +95,12 @@ public class SourceStreamTask<
         this(env, new Object());
     }
 
+    /**
+     * 调用父类构造方法（StreamTask）
+     * @param env
+     * @param lock
+     * @throws Exception
+     */
     private SourceStreamTask(Environment env, Object lock) throws Exception {
         super(
                 env,
@@ -174,6 +180,10 @@ public class SourceStreamTask<
     @Override
     protected void processInput(MailboxDefaultAction.Controller controller) throws Exception {
 
+        /**
+         * 调用此方法表示邮箱线程应该（暂时）停止调用默认操作，
+         * 因为目前没有可用的输入。此方法只能从邮箱线程调用
+         */
         controller.suspendDefaultAction();
 
         // Against the usual contract of this method, this implementation is not step-wise but
@@ -182,6 +192,10 @@ public class SourceStreamTask<
         // not in steps).
         sourceThread.setTaskDescription(getName());
 
+        /**
+         * 启动接受来源数据的线程
+         * 调用LegacySourceFunctionThread的run方法
+         */
         sourceThread.start();
 
         sourceThread

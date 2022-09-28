@@ -373,8 +373,17 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
             throws Exception {
         this.environment = environment;
         this.configuration = new StreamConfig(environment.getTaskConfiguration());
+        /**
+         * 创建recordWriter
+         */
         this.recordWriter = createRecordWriterDelegate(configuration, environment);
         this.actionExecutor = Preconditions.checkNotNull(actionExecutor);
+        /**
+         *
+         * processInput处理输入的方法
+         * SourceStreamTask 对应的是SourceStreamTask.processInput
+         * 其他task类型OneInputStreamTask、、对应到streamTask.processInput
+         */
         this.mailboxProcessor = new MailboxProcessor(this::processInput, mailbox, actionExecutor);
         this.mainMailboxExecutor = mailboxProcessor.getMainMailboxExecutor();
         this.asyncExceptionHandler = new StreamTaskAsyncExceptionHandler(environment);
@@ -385,7 +394,13 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
         environment.setMainMailboxExecutor(mainMailboxExecutor);
         environment.setAsyncOperationsThreadPool(asyncOperationsThreadPool);
 
+        /**
+         * 创建状态后端stateBackend
+         */
         this.stateBackend = createStateBackend();
+        /**
+         * 创建checkpointStorage(用于checkPoint)
+         */
         this.checkpointStorage = createCheckpointStorage(stateBackend);
 
         this.subtaskCheckpointCoordinator =
@@ -493,6 +508,9 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
      * @throws Exception on any problems in the action.
      */
     protected void processInput(MailboxDefaultAction.Controller controller) throws Exception {
+        /**
+         * InputStatus 指示来自异步输入的数据的可用性。当要求异步输入生成数据时，它会返回此状态以指示如何继续。
+         */
         DataInputStatus status = inputProcessor.processInput();
         switch (status) {
             case MORE_AVAILABLE:
@@ -666,6 +684,9 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
                 getEnvironment().getTaskStateManager().isTaskDeployedAsFinished()
                         ? new FinishedOperatorChain<>(this, recordWriter)
                         : new RegularOperatorChain<>(this, recordWriter);
+        /**
+         * mainOperator = StreamOperatorWrapper
+         */
         mainOperator = operatorChain.getMainOperator();
 
         getEnvironment()
@@ -749,21 +770,34 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
         // Allow invoking method 'invoke' without having to call 'restore' before it.
         if (!isRunning) {
             LOG.debug("Restoring during invoke will be called.");
+            /**
+             * 这里面会有一些初始化操作
+             * operatorChain
+             * mainOperator
+             *
+             *
+             */
             restoreInternal();
         }
 
-        // final check to exit early before starting to run
+        // 运行前再次检查是否退出
         ensureNotCanceled();
 
         scheduleBufferDebloater();
 
         // let the task do its work
+        /**
+         * 执行
+         */
         runMailboxLoop();
 
         // if this left the run() method cleanly despite the fact that this was canceled,
         // make sure the "clean shutdown" is not attempted
         ensureNotCanceled();
 
+        /**
+         * 执行invoke后置方法
+         */
         afterInvoke();
     }
 

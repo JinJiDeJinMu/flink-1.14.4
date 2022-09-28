@@ -107,6 +107,10 @@ public class StreamSource<OUT, SRC extends SourceFunction<OUT>>
                         emitProgressiveWatermarks);
 
         try {
+            /**
+             * 对应实现类，处理来源数据
+             * 例如SocketSourceFunction.run
+             */
             userFunction.run(ctx);
         } finally {
             if (latencyEmitter != null) {
