@@ -183,6 +183,7 @@ public class SourceStreamTask<
         /**
          * 调用此方法表示邮箱线程应该（暂时）停止调用默认操作，
          * 因为目前没有可用的输入。此方法只能从邮箱线程调用
+         * 调用invoke方法后这个放开往下运行
          */
         controller.suspendDefaultAction();
 
@@ -190,6 +191,9 @@ public class SourceStreamTask<
         // blocking instead for
         // compatibility reasons with the current source interface (source functions run as a loop,
         // not in steps).
+        /**
+         * 到这里sourceThread还没有初始化呢。所以这里要是没有暂时，直接走到这里肯定会空指针
+         */
         sourceThread.setTaskDescription(getName());
 
         /**

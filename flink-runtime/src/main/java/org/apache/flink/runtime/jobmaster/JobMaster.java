@@ -386,6 +386,9 @@ public class JobMaster extends PermanentlyFencedRpcEndpoint<JobMasterId>
     @Override
     protected void onStart() throws JobMasterException {
         try {
+            /**
+             * 处理task
+             */
             startJobExecution();
         } catch (Exception e) {
             final JobMasterException jobMasterException =
@@ -879,6 +882,13 @@ public class JobMaster extends PermanentlyFencedRpcEndpoint<JobMasterId>
         JobShuffleContext context = new JobShuffleContextImpl(jobGraph.getJobID(), this);
         shuffleMaster.registerJob(context);
 
+        /**
+         * 启动jobMaster，主要做以下几件事
+         * 1.创建TaskManager心跳连接管理
+         * 2.创建ResourceManager心跳连接管理
+         * 3.启动slot池，并确slot池现在接受此领导者的消息
+         * 4.启动resourceManger leader变更监控
+         */
         startJobMasterServices();
 
         log.info(
@@ -887,6 +897,9 @@ public class JobMaster extends PermanentlyFencedRpcEndpoint<JobMasterId>
                 jobGraph.getJobID(),
                 getFencingToken());
 
+        /**
+         * 真正开始运行任务
+         */
         startScheduling();
     }
 
@@ -970,6 +983,9 @@ public class JobMaster extends PermanentlyFencedRpcEndpoint<JobMasterId>
     }
 
     private void startScheduling() {
+        /**
+         * 走SchedulerBase.startScheduling方法
+         */
         schedulerNG.startScheduling();
     }
 

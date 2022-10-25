@@ -582,7 +582,13 @@ public abstract class SchedulerBase implements SchedulerNG, CheckpointScheduling
     public final void startScheduling() {
         mainThreadExecutor.assertRunningInMainThread();
         registerJobMetrics();
+        /**
+         * 启动所有的服务协调组
+         */
         operatorCoordinatorHandler.startAllOperatorCoordinators();
+        /**
+         * 运行
+         */
         startSchedulingInternal();
     }
 

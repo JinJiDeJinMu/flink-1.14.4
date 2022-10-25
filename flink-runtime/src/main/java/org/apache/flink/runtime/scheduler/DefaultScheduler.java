@@ -209,7 +209,13 @@ public class DefaultScheduler extends SchedulerBase implements SchedulerOperatio
         log.info(
                 "Starting scheduling with scheduling strategy [{}]",
                 schedulingStrategy.getClass().getName());
+        /**
+         * 任务状态变成运行中
+         */
         transitionToRunning();
+        /**
+         * 开始调度
+         */
         schedulingStrategy.startScheduling();
     }
 
@@ -396,6 +402,9 @@ public class DefaultScheduler extends SchedulerBase implements SchedulerOperatio
 
         transitionToScheduled(verticesToDeploy);
 
+        /**
+         * 申请slot
+         */
         final List<SlotExecutionVertexAssignment> slotExecutionVertexAssignments =
                 allocateSlots(executionVertexDeploymentOptions);
 
@@ -405,6 +414,9 @@ public class DefaultScheduler extends SchedulerBase implements SchedulerOperatio
                         deploymentOptionsByVertex,
                         slotExecutionVertexAssignments);
 
+        /**
+         * 申请之后部署
+         */
         waitForAllSlotsAndDeploy(deploymentHandles);
     }
 

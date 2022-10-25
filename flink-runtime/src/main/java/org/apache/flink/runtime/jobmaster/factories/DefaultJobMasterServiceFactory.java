@@ -121,6 +121,12 @@ public class DefaultJobMasterServiceFactory implements JobMasterServiceFactory {
                         DefaultExecutionDeploymentReconciler::new,
                         initializationTimestamp);
 
+        /**
+         * dispatcher提交任务最后到这里
+         * 创建JobMaster，并调用start方法
+         * jobMaster间接集成RpcEndpoint
+         * 所以创建之后会走到他的onStart生命周期方法
+         */
         jobMaster.start();
 
         return jobMaster;

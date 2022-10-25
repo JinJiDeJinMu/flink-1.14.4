@@ -509,7 +509,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
      */
     protected void processInput(MailboxDefaultAction.Controller controller) throws Exception {
         /**
-         * InputStatus 指示来自异步输入的数据的可用性。当要求异步输入生成数据时，它会返回此状态以指示如何继续。
+         * 处理输入的数据
          */
         DataInputStatus status = inputProcessor.processInput();
         switch (status) {
@@ -530,6 +530,9 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
                 // after all records processed by the downstream tasks. We also suspend the default
                 // actions to avoid repeat executing the empty default operation (namely process
                 // records).
+                /**
+                 * 没有后续的输入了，告知 MailboxDefaultAction.Controller,暂停
+                 */
                 controller.suspendDefaultAction();
                 mailboxProcessor.suspend();
                 return;
